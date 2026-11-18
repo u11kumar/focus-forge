@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Focus Forge</title>
+<meta name="theme-color" content="#120a24">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0d0718;--card:rgba(32,18,62,.7);--line:rgba(167,125,255,.22);--tx:#efe9ff;--mut:#a99bd0;--p:#8b5cf6;--p2:#c084fc;--ok:#34d399}
+*{box-sizing:border-box;margin:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;padding:env(safe-area-inset-top) 0 calc(20px + env(safe-area-inset-bottom));overflow-x:hidden}
+h1,h2,.num,.big{font-family:"Space Grotesk",system-ui,sans-serif}
+.bg{position:fixed;inset:0;z-index:-2;background:linear-gradient(135deg,#0d0718,#1d0f3d,#2d1160,#0d0718);background-size:300% 300%;animation:g 18s ease infinite}
+.orb{position:fixed;border-radius:50%;filter:blur(80px);opacity:.33;z-index:-1;animation:f 15s ease-in-out infinite}
+@keyframes g{50%{background-position:100% 50%}}
+@keyframes f{50%{transform:translate(50px,-70px) scale(1.25)}}
+header{display:flex;align-items:center;justify-content:space-between;gap:10px;max-width:1100px;margin:auto;padding:14px 14px 4px}
+h1{font-size:1.45rem;letter-spacing:.2px}
+#sync{font-size:.75rem;color:var(--mut)}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));max-width:1100px;margin:auto;padding:12px 14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.card h2{font-size:1rem;color:var(--p2);margin-bottom:12px;font-weight:600}
+.span2{grid-column:1/-1}
+.hero{display:flex;flex-wrap:wrap;gap:18px;align-items:center;justify-content:space-between}
+.hero .what{color:var(--mut);font-size:.95rem}.hero .what b{display:block;color:var(--tx);font-size:1.25rem;font-family:"Space Grotesk",sans-serif;margin-top:2px}
+.cd{display:flex;gap:10px}.cd div{min-width:68px;text-align:center;padding:10px 8px;border-radius:14px;background:rgba(139,92,246,.14);border:1px solid var(--line)}
+.cd .num{font-size:2rem;font-weight:700;line-height:1;display:block;text-shadow:0 0 18px rgba(192,132,252,.6)}.cd small{color:var(--mut);font-size:.72rem}
+.timer{display:flex;flex-direction:column;align-items:center;gap:12px}
+.ringbox{position:relative;width:230px;height:230px}
+.ringbox svg{transform:rotate(-90deg);width:100%;height:100%}
+.ringbox circle{fill:none;stroke-width:10;stroke-linecap:round}
+#rg{stroke:url(#gr);transition:stroke-dashoffset .4s linear;filter:drop-shadow(0 0 8px rgba(192,132,252,.7))}
+.running .ringbox{animation:pulse 2.4s ease-in-out infinite}
+@keyframes pulse{50%{filter:drop-shadow(0 0 16px rgba(139,92,246,.55))}}
+.tm{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.tm .big{font-size:3rem;font-weight:700}.tm span{color:var(--mut);font-size:.85rem}
+button,select,input{font:inherit;color:var(--tx)}
+button{cursor:pointer;border:1px solid var(--line);background:rgba(139,92,246,.18);padding:10px 16px;border-radius:12px;transition:transform .15s,background .2s,box-shadow .2s}
+button:hover{background:rgba(139,92,246,.35);box-shadow:0 0 16px rgba(139,92,246,.35)}button:active{transform:scale(.95)}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--p2);outline-offset:2px}
+.pri{background:linear-gradient(135deg,var(--p),#6d28d9);border:none;font-weight:600;padding:12px 28px}
+.row{display:flex;gap:10px;align-items:center;justify-content:space-between;margin:9px 0;flex-wrap:wrap}
+select,input{background:rgba(13,7,24,.7);border:1px solid var(--line);border-radius:10px;padding:9px 10px}
+.chip.on{background:linear-gradient(135deg,#059669,#34d399);color:#04130d;border:none;font-weight:600}
+.cnt button{padding:6px 12px}.cnt b{min-width:42px;display:inline-block;text-align:center}
+#stat{color:var(--mut);margin-bottom:10px}#stat b{color:var(--tx)}
+.bars{display:flex;gap:8px;align-items:flex-end;height:120px}
+.bar{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end}
+.bar i{width:100%;display:block;min-height:4px;border-radius:8px 8px 3px 3px;background:linear-gradient(to top,#6d28d9,#c084fc);position:relative;transition:height .6s cubic-bezier(.2,.8,.2,1)}
+.bar em{position:absolute;top:-18px;left:0;right:0;text-align:center;font-size:.75rem;font-style:normal}.bar span{font-size:.75rem;color:var(--mut)}
+#quote{min-height:120px;transition:opacity .5s,transform .5s}#quote.out{opacity:0;transform:translateY(8px)}
+#quote p{font-size:1.18rem;line-height:1.5;font-family:Georgia,serif}#quote small{display:block;margin-top:10px;color:var(--p2)}
+.ex{display:flex;justify-content:space-between;padding:8px 10px;border-radius:10px;margin:4px 0;font-size:.92rem}
+.ex.next{background:rgba(139,92,246,.22);border:1px solid var(--line)}.ex.past{opacity:.4;text-decoration:line-through}
+.ex b{color:var(--p2)}
+dialog{background:#1a0e36;color:var(--tx);border:1px solid var(--line);border-radius:20px;padding:20px;width:min(440px,92vw)}
+dialog::backdrop{background:rgba(5,2,12,.7)}dialog label{display:block;margin:12px 0 4px;color:var(--mut);font-size:.85rem}dialog input{width:100%}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translate(-50%,120px);background:#2d1160;border:1px solid var(--p2);padding:12px 18px;border-radius:14px;transition:transform .4s;z-index:9;max-width:90vw}
+.toast.show{transform:translate(-50%,0)}
+.note{color:var(--mut);font-size:.8rem;line-height:1.4;margin-top:8px}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style></head>
+<body>
+<div class="bg"></div><div class="orb" style="width:340px;height:340px;background:#7c3aed;top:-80px;left:-60px"></div><div class="orb" style="width:300px;height:300px;background:#c026d3;bottom:-60px;right:-40px;animation-delay:-6s"></div>
+<header><h1>Focus Forge</h1><div><span id="sync">Local only</span> <button id="setb" aria-label="Settings">⚙︎ Settings</button></div></header>
+<main class="grid">
+ <section class="card span2 hero"><div class="what">Next exam<b id="exn">-</b><span id="exd"></span></div><div class="cd" id="cd"></div></section>
+
+ <section class="card timer" id="tcard"><h2 style="align-self:flex-start">Pomodoro</h2>
+  <div class="ringbox"><svg viewBox="0 0 200 200"><defs><linearGradient id="gr"><stop offset="0" stop-color="#c084fc"/><stop offset="1" stop-color="#7c3aed"/></linearGradient></defs><circle cx="100" cy="100" r="90" stroke="rgba(167,125,255,.15)"/><circle id="rg" cx="100" cy="100" r="90" stroke-dasharray="565.5" stroke-dashoffset="0"/></svg>
+  <div class="tm"><div class="big" id="tt">25:00</div><span id="tmode">Focus</span></div></div>
+  <div class="row" style="justify-content:center"><button class="pri" id="go">Start</button><button id="rs">Reset</button><button id="sk">Skip</button></div>
+  <div class="row" style="width:100%"><span>Subject</span><select id="subj"></select></div>
+  <div id="stat"></div>
+ </section>
+
+ <section class="card"><h2>Today</h2><div id="chk"></div><div class="note">Stats and ticks save automatically and sync to your other device.</div></section>
+
+ <section class="card"><h2>Last 7 days: focus sessions</h2><div class="bars" id="bars"></div></section>
+
+ <section class="card"><h2>Mindset</h2><div id="quote"></div><div class="row"><button id="nq">New thought</button></div></section>
+
+ <section class="card"><h2>Exam calendar</h2><div id="exl"></div></section>
+</main>
+
+<dialog id="dlg"><h2 style="margin-bottom:6px">Settings</h2>
+ <label for="code">Sync code (use the same one on laptop and phone)</label>
+ <input id="code" type="password" autocomplete="off" placeholder="long private phrase, 12+ characters">
+ <div class="note">Anyone with this phrase can read your data. Pick something long that only you know. It is hashed before it leaves your device.</div>
+ <div class="row"><label for="f1" style="margin:0">Focus min</label><input id="f1" type="number" min="5" max="90" style="width:80px"></div>
+ <div class="row"><label for="f2" style="margin:0">Short break</label><input id="f2" type="number" min="1" max="30" style="width:80px"></div>
+ <div class="row"><label for="f3" style="margin:0">Long break</label><input id="f3" type="number" min="5" max="60" style="width:80px"></div>
+ <div class="row"><label for="rm" style="margin:0">Reminders (workout, meals, study, sleep)</label><input id="rm" type="checkbox" style="width:auto"></div>
+ <div class="row"><button id="np">Allow notifications</button><button id="inst" hidden>Install app</button></div>
+ <div class="note">Reminders fire while the app is open or running in the background. For guaranteed alerts when the app is closed, also set phone alarms.</div>
+ <div class="row" style="margin-top:16px"><button id="sv" class="pri">Save</button><button id="cl">Close</button></div>
+</dialog>
+<div class="toast" id="toast"></div>
+
+<script>
+const $=s=>document.querySelector(s);
+const LS=(k,v)=>v===undefined?JSON.parse(localStorage.getItem(k)||'null'):localStorage.setItem(k,JSON.stringify(v));
+const dkey=(d=new Date())=>d.toLocaleDateString('en-CA');
+const SUBJ=['Strategic Management','Business Laws','Accounting','Cyber / Sustainability / Data (MPM-303)','Power Market','Project Management','E-commerce','Energy Conservation','Rural Energy','CERC / Regulations','Python / Go / Project','Other'];
+const EXAMS=[['Strategic Management','2026-12-09'],['Business Laws','2026-12-11'],['Accounting','2026-12-16'],['Sustainability, Data & Cyber','2026-12-17'],['Power Market','2026-12-19'],['Project Management','2026-12-22'],['E-commerce','2026-12-24'],['Energy Conservation','2026-12-29'],['Rural Energy','2026-12-31']];
+const EXAM_HOUR=10; // assumed paper start time; change if yours differs
+const Q=[
+['The impediment to action advances action. What stands in the way becomes the way.','Marcus Aurelius'],
+['It is not that we have a short time to live, but that we waste a lot of it.','Seneca'],
+['He who has a why to live can bear almost any how.','Friedrich Nietzsche'],
+['Waste no more time arguing what a good man should be. Be one.','Marcus Aurelius'],
+['No man is free who is not master of himself.','Epictetus'],
+['First say to yourself what you would be; then do what you have to do.','Epictetus'],
+['It does not matter how slowly you go as long as you do not stop.','Confucius'],
+['The unexamined life is not worth living.','Socrates'],
+['A journey of a thousand miles begins with a single step.','Lao Tzu'],
+['Hard work beats raw talent when talent sleeps in.','In the spirit of Rock Lee (Naruto)'],
+['The only opponent worth beating is who you were yesterday.','In the spirit of Vinland Saga'],
+['Patience is a skill. Train it like a muscle.','In the spirit of Hunter x Hunter'],
+['Do not wait to feel ready. Move, and the fear shrinks.','In the spirit of Attack on Titan'],
+['A failed attempt is a rep, not a verdict.','In the spirit of Haikyuu!!'],
+['Nothing is gained without giving something up. Trade distraction for progress.','In the spirit of Fullmetal Alchemist'],
+['Grind quietly. Level up where nobody is watching.','In the spirit of Solo Leveling'],
+['Be hungry enough to outwork everyone in the room.','In the spirit of Blue Lock']];
+const REM=[['10:30','Wake up. Water, then eggs and fruit.'],['13:00','Lunch: add real protein (dal, paneer, eggs).'],['17:45','Workout in 15 minutes. Get changed now.'],['19:30','Post-workout dinner. Protein first.'],['21:30','Deep study block. Phone goes away.'],['00:45','Revise older subjects and update the error notebook.'],['02:30','Phone away. Sleep by 3.']];
+
+let S=LS('fg_days')||{};
+let C=Object.assign({code:'',rem:1,focus:25,short:5,long:15,subj:SUBJ[0]},LS('fg_cfg')||{});
+let T=LS('fg_timer')||{mode:'focus',end:0,left:C.focus*60};
+const day=(k=dkey())=>S[k]||(S[k]={s:[],w:0,m:0,h:0,n:0,u:0});
+const dur=m=>(m==='focus'?C.focus:m==='short'?C.short:C.long)*60;
+
+/* ---------- sync ---------- */
+function merge(a,b){const o={};for(const k of new Set([...Object.keys(a),...Object.keys(b)])){const x=a[k],y=b[k];if(!x||!y){o[k]=x||y;continue}
+ const n=x.u>=y.u?x:y,ids=new Set(),s=[...x.s,...y.s].filter(e=>!ids.has(e.id)&&ids.add(e.id)).sort((p,q)=>p.t-q.t);o[k]={...n,s,u:Math.max(x.u,y.u)}}return o}
+const sha=async s=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode('fg:'+s)))].map(b=>b.toString(16).padStart(2,'0')).join('');
+let busy=0,tmr;
+const setSt=t=>$('#sync').textContent=t;
+const schedSync=()=>{clearTimeout(tmr);tmr=setTimeout(sync,1200)};
+async function sync(){if(!C.code||busy)return;busy=1;setSt('Syncing…');
+ try{const k=await sha(C.code);const r=await fetch('/api/sync?k='+k);if(!r.ok)throw 0;const rem=(await r.json()).days||{};
+  S=merge(S,rem);LS('fg_days',S);
+  if(JSON.stringify(S)!==JSON.stringify(rem)){const p=await fetch('/api/sync?k='+k,{method:'PUT',body:JSON.stringify({days:S})});if(!p.ok)throw 0}
+  setSt('Synced '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}));render()}
+ catch(e){setSt('Offline: saved on this device')}busy=0}
+const save=()=>{LS('fg_days',S);schedSync()};
+const touch=d=>{d.u=Date.now();save();render()};
+
+/* ---------- notify ---------- */
+let AC;function beep(){try{AC=AC||new AudioContext();[660,880].forEach((f,i)=>{const o=AC.createOscillator(),g=AC.createGain();o.frequency.value=f;o.connect(g);g.connect(AC.destination);g.gain.setValueAtTime(.15,AC.currentTime+i*.2);g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+i*.2+.3);o.start(AC.currentTime+i*.2);o.stop(AC.currentTime+i*.2+.3)})}catch(e){}}
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('show'),5000)}
+async function ping(t,b){toast(t+': '+b);beep();navigator.vibrate&&navigator.vibrate([200,100,200]);
+ try{if(Notification.permission==='granted'){const reg=await navigator.serviceWorker.getRegistration();reg?reg.showNotification(t,{body:b,icon:'icon-192.png',badge:'icon-192.png',vibrate:[200,100,200],tag:t+b}):new Notification(t,{body:b})}}catch(e){}}
+function reminders(){if(!C.rem)return;const n=new Date(),hm=n.toTimeString().slice(0,5),key=dkey(n)+hm;if(LS('fg_last')===key)return;
+ const r=REM.find(x=>x[0]===hm);if(r){LS('fg_last',key);ping('Focus Forge',r[1]);return}
+ const h=n.getHours();
+ if((h>=11||h<2)&&n.getMinutes()%30===0&&!T.end){const d=day(),last=Math.max(T.last||0,...d.s.map(e=>e.t));
+  if(Date.now()-last>90*60000){LS('fg_last',key);ping('Time check','No focus session for a while. Start one 25-minute round.')}}}
+
+/* ---------- timer ---------- */
+function reset(m=T.mode){T={mode:m,end:0,left:dur(m),last:T.last};LS('fg_timer',T)}
+function done(){T.last=Date.now();if(T.mode==='focus'){const d=day();d.s.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),t:Date.now(),m:C.focus,s:C.subj});
+  ping('Session complete','Well done. Take your break.');reset(d.s.length%4===0?'long':'short');touch(d)}
+ else{ping('Break over','Back to focus.');reset('focus');render()}}
+function left(){return T.end?Math.max(0,Math.round((T.end-Date.now())/1000)):T.left}
+function tick(){const l=left();if(T.end&&l<=0)return done();
+ $('#tt').textContent=String(Math.floor(l/60)).padStart(2,'0')+':'+String(l%60).padStart(2,'0');
+ $('#rg').style.strokeDashoffset=565.5*(1-l/dur(T.mode));
+ $('#tmode').textContent={focus:'Focus',short:'Short break',long:'Long break'}[T.mode];
+ $('#go').textContent=T.end?'Pause':'Start';$('#tcard').classList.toggle('running',!!T.end);
+ document.title=T.end?$('#tt').textContent+' · Focus Forge':'Focus Forge';
+ const x=nextExam(),ms=Math.max(0,x.at-Date.now()),s=Math.floor(ms/1000);
+ $('#cd').innerHTML=[[Math.floor(s/86400),'days'],[Math.floor(s%86400/3600),'hours'],[Math.floor(s%3600/60),'min'],[s%60,'sec']].map(a=>`<div><span class="num">${a[0]}</span><small>${a[1]}</small></div>`).join('')}
+$('#go').onclick=()=>{if(T.end){T.left=left();T.end=0}else T.end=Date.now()+T.left*1000;LS('fg_timer',T);tick()};
+$('#rs').onclick=()=>{reset();tick()};
+$('#sk').onclick=()=>{reset(T.mode==='focus'?'short':'focus');tick()};
+
+/* ---------- views ---------- */
+const exAt=e=>{const[y,m,d]=e[1].split('-').map(Number);return new Date(y,m-1,d,EXAM_HOUR).getTime()};
+const nextExam=()=>{const e=EXAMS.find(x=>exAt(x)>Date.now())||EXAMS[EXAMS.length-1];return{name:e[0],at:exAt(e)}};
+function streak(){let n=0,d=new Date();if(!(S[dkey(d)]?.s.length))d.setDate(d.getDate()-1);while(S[dkey(d)]?.s.length){n++;d.setDate(d.getDate()-1)}return n}
+function render(){const d=day(),n=d.s.length,min=d.s.reduce((a,e)=>a+e.m,0),x=nextExam(),dl=Math.ceil((x.at-Date.now())/864e5);
+ $('#exn').textContent=x.name;$('#exd').textContent=new Date(x.at).toLocaleDateString([],{weekday:'long',day:'numeric',month:'long'})+' · '+dl+' day'+(dl===1?'':'s')+' left';
+ $('#stat').innerHTML=`<b>${n}</b> sessions today · <b>${min}</b> min · streak <b>${streak()}</b> day${streak()===1?'':'s'}`;
+ const cnt=(k,l,max)=>`<div class="row cnt"><span>${l}</span><span><button data-a="${k}-" aria-label="less">−</button><b>${d[k]}/${max}</b><button data-a="${k}+" aria-label="more">+</button></span></div>`;
+ $('#chk').innerHTML=`<div class="row"><button class="chip ${d.w?'on':''}" data-a="w">Workout ${d.w?'done ✓':'not yet'}</button><button class="chip ${d.n?'on':''}" data-a="n">No doom-scroll today ${d.n?'✓':''}</button></div>`+cnt('m','Healthy meals',3)+cnt('h','Water glasses',8);
+ const days=[...Array(7)].map((_,i)=>{const x=new Date();x.setDate(x.getDate()-6+i);return[x,S[dkey(x)]?.s.length||0]}),mx=Math.max(4,...days.map(a=>a[1]));
+ $('#bars').innerHTML=days.map(([x,c])=>`<div class="bar"><i style="height:${c/mx*100}%"><em>${c||''}</em></i><span>${x.toLocaleDateString([],{weekday:'narrow'})}</span></div>`).join('');
+ $('#exl').innerHTML=EXAMS.map(e=>{const l=Math.ceil((exAt(e)-Date.now())/864e5);return`<div class="ex ${l<0?'past':e[0]===x.name?'next':''}"><span>${e[0]}</span><b>${l<0?'done':new Date(exAt(e)).toLocaleDateString([],{day:'numeric',month:'short'})+' · '+l+'d'}</b></div>`}).join('')}
+document.addEventListener('click',e=>{const a=e.target.closest('[data-a]')?.dataset.a;if(!a)return;const d=day();
+ ({w:()=>d.w^=1,n:()=>d.n^=1,'m+':()=>d.m=Math.min(6,d.m+1),'m-':()=>d.m=Math.max(0,d.m-1),'h+':()=>d.h=Math.min(15,d.h+1),'h-':()=>d.h=Math.max(0,d.h-1)})[a]?.();touch(d)});
+
+/* ---------- quotes ---------- */
+let qi=Math.floor(Math.random()*Q.length);
+function quote(anim){const el=$('#quote'),set=()=>{const q=Q[qi];el.innerHTML=`<p>“${q[0]}”</p><small>${q[1]}</small>`;el.classList.remove('out')};
+ if(!anim)return set();el.classList.add('out');setTimeout(set,450)}
+$('#nq').onclick=()=>{qi=(qi+1+Math.floor(Math.random()*(Q.length-1)))%Q.length;quote(1)};
+setInterval(()=>{qi=(qi+1)%Q.length;quote(1)},20000);
+
+/* ---------- settings ---------- */
+$('#subj').innerHTML=SUBJ.map(s=>`<option>${s}</option>`).join('');$('#subj').value=C.subj;
+$('#subj').onchange=e=>{C.subj=e.target.value;LS('fg_cfg',C)};
+$('#setb').onclick=()=>{$('#code').value=C.code;$('#f1').value=C.focus;$('#f2').value=C.short;$('#f3').value=C.long;$('#rm').checked=!!C.rem;$('#dlg').showModal()};
+$('#cl').onclick=()=>$('#dlg').close();
+$('#np').onclick=async()=>{try{const p=await Notification.requestPermission();toast(p==='granted'?'Notifications allowed':'Notifications blocked in browser settings')}catch(e){toast('Notifications not supported here')}};
+$('#sv').onclick=()=>{const f=+$('#f1').value||25;const chg=f!==C.focus||+$('#f2').value!==C.short||+$('#f3').value!==C.long;
+ Object.assign(C,{code:$('#code').value.trim(),focus:f,short:+$('#f2').value||5,long:+$('#f3').value||15,rem:$('#rm').checked?1:0});LS('fg_cfg',C);
+ if(chg&&!T.end)reset();$('#dlg').close();sync();tick()};
+let dp;addEventListener('beforeinstallprompt',e=>{e.preventDefault();dp=e;$('#inst').hidden=false});
+$('#inst').onclick=async()=>{if(dp){dp.prompt();dp=null;$('#inst').hidden=true}};
+
+/* ---------- boot ---------- */
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+render();quote();tick();sync();
+setInterval(tick,500);setInterval(reminders,20000);setInterval(render,60000);setInterval(sync,45000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){tick();sync()}});
+</script></body></html>
